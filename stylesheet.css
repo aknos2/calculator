@@ -11,13 +11,14 @@ body {
     height: 650px;
     display: flex;
     flex-direction: column;
-    border: 4px solid black;
+    border: 4px solid rgb(48, 47, 46);
     border-radius: 45px;
     margin: 0 auto;
     margin-top: 50px;
     flex-wrap: wrap;
     align-items: center;
     background-color: rgb(48, 47, 46);
+    box-shadow: 0px 10px rgb(29, 28, 28);;
 }
 
 .container .screen {
@@ -40,17 +41,17 @@ body {
 }
 
 .container .button { 
+    font-size: 30px;
     width: 80px;
     height: 70px;
     border: 3px solid rgb(138, 212, 197);
     border-radius: 4px;
     background-color: rgb(165, 231, 218);
+    text-align: center;
+    align-content: center;
+    box-shadow: 0px 6px rgb(76, 118, 110)
 }
 
-/*#button0 {
-    flex-basis: 160px;
-}
-
-#button-equal {
-   flex-basis:140px;
+#button0 {
+    flex-grow: 0.6;
 }
