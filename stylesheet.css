@@ -52,6 +52,16 @@ body {
     box-shadow: 0px 6px rgb(76, 118, 110)
 }
 
+.button:hover {
+    cursor: pointer;
+}
+
 #button0 {
     flex-grow: 0.6;
+}
+
+.screen-text {
+    font-size: 90px;
+    float: right;
+    margin-right: 10px;
 }
