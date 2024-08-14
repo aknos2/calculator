@@ -10,11 +10,13 @@ const C = document.querySelector("#buttonC");
 const CE = document.querySelector("#button-CE");
 const equal = document.querySelector("#button-equal");
 
-
+const maxDigits = 7; 
 let operator = "";
 let currentNumber = "";
 let previousNumber = "";
 let errorState = false;
+let lastResult = null;
+let lastOperator = "";
 
 buttons.forEach(button => {
     button.addEventListener("click", event => {
@@ -33,6 +35,7 @@ buttons.forEach(button => {
             screen.textContent = "0";
             errorState = false;
             C.classList.remove("error-message");
+            lastResult = null;
 
         } else if (value === "CE") {
             currentNumber = "";
@@ -59,6 +62,7 @@ buttons.forEach(button => {
                     currentNumber = "";
                     operator = value;
                     screen.textContent = previousNumber; // Display the result of the operation
+                    lastResult = previousNumber;
             } else {
                 // No operator in play yet
                 previousNumber = currentNumber;
@@ -86,10 +90,16 @@ buttons.forEach(button => {
                         screen.textContent = "0"; // Reset to "0" if result is invalid
                     } else {
                         display();
+                        lastResult = currentNumber;
+                        lastOperator = operator; // Saves last used operator
                         operator = "";
-                        previousNumber = "";
                     }
-                }
+                } 
+            } else if (lastResult !== null && lastOperator) {
+                // Continue the last operation with the last result and previous number
+                currentNumber = operate(lastResult, previousNumber, lastOperator);
+                display();
+                lastResult = currentNumber;
             }
 
         } else if (value === ".") {
@@ -99,12 +109,14 @@ buttons.forEach(button => {
                 } 
 
         } else { //prevents number from starting with multiple zeros and dots
-            if (currentNumber === "0" && value !== ".") {
-                currentNumber = value;
-            } else if (currentNumber !== "00") {
-                currentNumber += value
+             if (currentNumber.length < maxDigits) {
+                if (currentNumber === "0" && value !== ".") {
+                    currentNumber = value;
+                } else if (currentNumber !== "00") {
+                    currentNumber += value
+                }
+                display();
             }
-            display();
         }
 
     });
@@ -112,8 +124,8 @@ buttons.forEach(button => {
 
 
 function operate(a, b, operation) {
-    num1 = parseFloat(a);
-    num2 = parseFloat(b);
+    let num1 = parseFloat(a.replace(/,/g, ''));
+    let num2 = parseFloat(b.replace(/,/g, ''));
 
     switch(operation) {
         case "+":
@@ -130,7 +142,19 @@ function operate(a, b, operation) {
 } 
 
 function display() {
-    screen.textContent = currentNumber;
+    if (currentNumber.length > maxDigits) {
+        const scientificNotation = parseFloat(currentNumber).toExponential(2);
+        screen.textContent = scientificNotation;
+    } else {
+        const formattedNumber = formatNumberWithCommas(currentNumber);
+        screen.textContent = formattedNumber;
+    }
+}
+
+function formatNumberWithCommas(number) {
+    let [integerPart, decimalPart] = number.split(".");
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
 }
 
 function buttonIlluminate() {
