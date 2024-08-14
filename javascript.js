@@ -14,53 +14,90 @@ const equal = document.querySelector("#button-equal");
 let operator = "";
 let currentNumber = "";
 let previousNumber = "";
+let errorState = false;
 
 buttons.forEach(button => {
     button.addEventListener("click", event => {
         buttonIlluminate();
         const value = event.target.textContent;
 
+        if (errorState && value !== "C") {
+            // If in error state and button is not "C" or "CE", ignore the click
+            return;
+        }
+
         if (value === "C") {
             operator = "";
             currentNumber = "";
             previousNumber = "";
             screen.textContent = "0";
+            errorState = false;
+            C.classList.remove("error-message");
+
         } else if (value === "CE") {
             currentNumber = "";
             screen.textContent = "0"
+
         } else if (value === "%") {
             if (currentNumber) {
                 currentNumber = (parseFloat(currentNumber) / 100).toString();
                 display();
             }
+
         } else if (["+", "-", "÷", "x"].includes(value)) {
-            if (currentNumber === "" && previousNumber !== "") {
+              if (currentNumber === "" && previousNumber === "") {
+                // Ignore if operator is pressed with no numbers entered
+                return;
+            } else if (currentNumber === "" && previousNumber !== "") {
+                // Replace the operator if pressed consecutively
                 operator = value;
+            } else if (operator && currentNumber === "") {
+                operator = value; 
+                // Update the operator and wait for the next number
+            } else if (operator && currentNumber !== "") {
+                    previousNumber = operate(previousNumber, currentNumber, operator);
+                    currentNumber = "";
+                    operator = value;
+                    screen.textContent = previousNumber; // Display the result of the operation
             } else {
+                // No operator in play yet
                 previousNumber = currentNumber;
                 currentNumber = "";
                 operator = value;
-            }``
+        }
+            
         } else if (value === "=") {
             if (operator && currentNumber) {
-                currentNumber = operate(previousNumber, currentNumber, operator);
-                // Check for NaN or Infinity and reset if it's the case
-                if (isNaN(currentNumber) || !isFinite(currentNumber)) {
+                // Check for division by zero
+                if (operator === "÷" && parseFloat(currentNumber) === 0) {
+                    screen.textContent = "Error"; // Display "Error" for division by zero
                     currentNumber = "";
                     previousNumber = "";
                     operator = "";
-                    screen.textContent = "0";
+                    errorState = true;     
+                    C.classList.add("error-message");
                 } else {
-                    display();
-                    operator = "";
-                    previousNumber = "";
+                    currentNumber = operate(previousNumber, currentNumber, operator);
+                    // Check for NaN or Infinity and reset if necessary
+                    if (isNaN(currentNumber) || !isFinite(currentNumber)) {
+                        currentNumber = "";
+                        previousNumber = "";
+                        operator = "";
+                        screen.textContent = "0"; // Reset to "0" if result is invalid
+                    } else {
+                        display();
+                        operator = "";
+                        previousNumber = "";
+                    }
                 }
             }
+
         } else if (value === ".") {
                 if (!currentNumber.includes(".")) {
                     currentNumber += ".";
                     display();
                 } 
+
         } else { //prevents number from starting with multiple zeros and dots
             if (currentNumber === "0" && value !== ".") {
                 currentNumber = value;
@@ -77,10 +114,6 @@ buttons.forEach(button => {
 function operate(a, b, operation) {
     num1 = parseFloat(a);
     num2 = parseFloat(b);
-
-    if (operation === "÷" && num2 === 0) {
-        return NaN;
-    }
 
     switch(operation) {
         case "+":
