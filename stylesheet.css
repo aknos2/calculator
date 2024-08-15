@@ -67,9 +67,9 @@ body {
 }
 
 .screen-text {
-    font-size: 90px;
+    font-size: 85px;
     float: right;
-    margin-right: 10px;
+    margin-right: 7px;
 }
 
 .button.illuminate {
@@ -90,4 +90,33 @@ body {
     animation-name: error;
     animation-duration: 0.7s;
     animation-iteration-count: infinite;
+}
+
+.instructions {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.instructions .list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.instructions ul {
+    list-style-type: none;
+}
+
+h3 {
+    text-align: center;
+    padding-top: 40px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.bold-letter {
+    font-weight: bold;
 }
